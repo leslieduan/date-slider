@@ -44,7 +44,7 @@ export const TimeUnitLabels = memo(
             key={`${date.getTime()}-${index}`}
             className={
               classNames?.scaleLabel ||
-              'bottom-0 whitespace-nowrap text-center text-xs font-medium text-ds-scale-text shadow-sm absolute'
+              'bottom-0 whitespace-nowrap text-center text-xs font-medium text-slate-700 shadow-sm absolute'
             }
             style={{ left: `${position}%` }}
             aria-hidden="true"

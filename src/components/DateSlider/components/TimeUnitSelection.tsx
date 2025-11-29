@@ -75,7 +75,7 @@ export const TimeUnitSelection = memo(
           <p
             className={cn(
               'text-center text-base font-bold',
-              classNames?.timeUnitText || 'text-ds-selector-text',
+              classNames?.timeUnitText || 'text-slate-700',
               {
                 'text-xs': heightBreakpoint === 'sm' || heightBreakpoint === 'xs',
               }

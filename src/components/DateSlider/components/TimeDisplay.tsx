@@ -45,7 +45,7 @@ export const TimeDisplay = ({
       <div className="h-full flex items-center justify-center md:w-28">
         <p
           className={cn(
-            classNames?.timeDisplayText || 'text-ds-display-text font-semibold text-xs md:text-base'
+            classNames?.timeDisplayText || 'text-slate-700 font-semibold text-xs md:text-base'
           )}
         >
           {dateLabel}

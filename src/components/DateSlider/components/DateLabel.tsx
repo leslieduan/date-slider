@@ -34,7 +34,7 @@ export const DateLabel = memo(
         className={cn(
           'hidden md:block fixed z-50 transform -translate-x-1/2 pointer-events-none',
           classNames?.dateLabel ||
-            'bg-ds-label-bg text-ds-label-text text-xs px-2 py-1 rounded whitespace-nowrap'
+            'bg-blue-600 text-white text-xs px-2 py-1 rounded whitespace-nowrap shadow-sm'
         )}
         role="tooltip"
         aria-live="polite"

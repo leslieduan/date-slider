@@ -28,7 +28,7 @@ const CursorLine = memo(
         className={cn(
           'hidden md:block absolute top-0 h-full w-px transform -translate-x-0.5 pointer-events-none z-20 transition-opacity duration-150',
           'motion-reduce:transition-none',
-          className || 'bg-ds-cursor-line/70'
+          className || 'bg-blue-500/70'
         )}
         aria-hidden="true"
       />
@@ -75,7 +75,7 @@ const Scales = memo(
               ? scaleMarkMediumClassName
               : scaleMarkMinorClassName;
 
-        return cn(baseClass, typeSpecificClass || scaleMarkClassName || 'bg-ds-scale-major');
+        return cn(baseClass, typeSpecificClass || scaleMarkClassName || 'bg-slate-600');
       },
       [
         scaleMarkClassName,
@@ -281,7 +281,7 @@ export const SliderTrack = memo(
             className={cn(
               'absolute h-full rounded-full transition-all duration-200 z-10',
               'motion-reduce:transition-none',
-              classNames?.trackActive || 'bg-ds-track-active/30'
+              classNames?.trackActive || 'bg-blue-500/30'
             )}
             style={{ width: `${props.pointPosition}%` }}
           />
@@ -328,7 +328,7 @@ export const SliderTrack = memo(
             className={cn(
               'absolute h-full transition-all duration-200 z-10',
               'motion-reduce:transition-none',
-              classNames?.trackActive || 'bg-ds-track-active/30'
+              classNames?.trackActive || 'bg-blue-500/30'
             )}
             style={{
               left: `${props.rangeStart}%`,
