@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { clampPercent } from '@/utils';
 
-import type { SliderProps, TimeUnit } from '../type';
+import type { TimeUnit } from '../type';
 import { getTotalScales } from '../utils/utils';
 
 /**
@@ -19,8 +19,8 @@ import { getTotalScales } from '../utils/utils';
  * @returns Position state and setters, plus refs for stable access in callbacks
  */
 export function usePositionState(
-  initialRange: SliderProps['initialRange'],
-  initialPoint: SliderProps['initialPoint'],
+  initialRange: { start: Date; end: Date } | undefined,
+  initialPoint: Date | undefined,
   startDate: Date,
   timeUnit: TimeUnit,
   totalScaleUnits: number

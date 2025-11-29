@@ -45,31 +45,44 @@ import {
 
 export const DateSlider = memo(
   ({
-    viewMode,
-    startDate: propStartDate,
-    endDate: propEndDate,
+    // Core props
+    mode: viewMode,
+    value,
+    min: propStartDate,
+    max: propEndDate,
     initialTimeUnit,
-    initialRange: propInitialRange,
-    initialPoint: propInitialPoint,
-    granularity = 'day',
-    classNames,
-    pointHandleIcon,
-    rangeHandleIcon,
-    scrollable = true,
-    isTrackFixedWidth = false,
-    minGapScaleUnits = DEFAULTS.MIN_GAP_SCALE_UNITS,
     onChange,
-    trackPaddingX = LAYOUT.TRACK_PADDING_X,
-    scaleUnitConfig = DEFAULT_SCALE_CONFIG,
-    sliderWidth,
-    sliderHeight,
-    imperativeHandleRef,
-    withEndLabel = true,
-    timeUnitSelectionEnabled = true,
-    freeSelectionOnTrackClick = false,
-    timeDisplayEnabled = false,
-    labelPersistent,
+    // Grouped configs
+    classNames,
+    icons,
+    behavior,
+    features,
+    layout,
+    // Advanced
+    granularity = 'day',
+    imperativeRef: imperativeHandleRef,
   }: SliderProps) => {
+    // Extract icon config with defaults
+    const pointHandleIcon = icons?.point;
+    const rangeHandleIcon = icons?.rangeStart ?? icons?.rangeEnd;
+
+    // Extract behavior config with defaults
+    const scrollable = behavior?.scrollable ?? true;
+    const freeSelectionOnTrackClick = behavior?.freeSelectionOnTrackClick ?? false;
+    const labelPersistent = behavior?.labelPersistent;
+
+    // Extract features config with defaults
+    const timeUnitSelectionEnabled = features?.timeUnitSelector ?? true;
+    const timeDisplayEnabled = features?.timeDisplay ?? false;
+
+    // Extract layout config with defaults
+    const sliderWidth = layout?.width;
+    const sliderHeight = layout?.height;
+    const trackPaddingX = layout?.trackPaddingX ?? LAYOUT.TRACK_PADDING_X;
+    const isTrackFixedWidth = layout?.fixedTrackWidth ?? false;
+    const withEndLabel = layout?.showEndLabel ?? true;
+    const minGapScaleUnits = layout?.minGapScaleUnits ?? DEFAULTS.MIN_GAP_SCALE_UNITS;
+    const scaleUnitConfig = layout?.scaleUnitConfig ?? DEFAULT_SCALE_CONFIG;
     const [dimensions, setDimensions] = useState({ parent: 0, slider: 0 });
     const [timeUnit, setTimeUnit] = useState<TimeUnit>(initialTimeUnit);
 
@@ -79,6 +92,17 @@ export const DateSlider = memo(
      */
     const startDate = propStartDate;
     const endDate = propEndDate;
+
+    // Extract initial values from the unified value prop (or use defaults based on mode)
+    const propInitialPoint =
+      value && 'point' in value ? value.point : viewMode === 'point' ? startDate : undefined;
+    const propInitialRange =
+      value && 'start' in value && 'end' in value
+        ? { start: value.start, end: value.end }
+        : viewMode === 'range' || viewMode === 'combined'
+          ? { start: startDate, end: endDate }
+          : undefined;
+
     const initialPoint = propInitialPoint;
     const initialRange = propInitialRange;
 

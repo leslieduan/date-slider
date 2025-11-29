@@ -75,7 +75,7 @@ export const TimeUnitSelection = memo(
           <p
             className={cn(
               'text-center text-base font-bold',
-              classNames?.timeUnitText || 'text-slate-700',
+              classNames?.timeUnitText || 'text-ds-selector-text',
               {
                 'text-xs': heightBreakpoint === 'sm' || heightBreakpoint === 'xs',
               }
@@ -94,7 +94,7 @@ export const TimeUnitSelection = memo(
             >
               <TriangleIcon
                 size={getIconSize(heightBreakpoint)}
-                className={cn(classNames?.timeUnitText || 'text-slate-700', '!')}
+                className={cn(classNames?.timeUnitText || 'text-ds-selector-text', '!')}
               />
             </Button>
             <Button
@@ -107,7 +107,7 @@ export const TimeUnitSelection = memo(
             >
               <TriangleIcon
                 size={getIconSize(heightBreakpoint)}
-                className={cn(classNames?.timeUnitText || 'text-slate-700', '!')}
+                className={cn(classNames?.timeUnitText || 'text-ds-selector-text', '!')}
               />
             </Button>
           </div>

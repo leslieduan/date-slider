@@ -378,12 +378,13 @@ export const createSelectionResult = (
 
   switch (viewMode) {
     case 'range':
-      return { range: { start: startLabel, end: endLabel } };
+      return { start: startLabel, end: endLabel };
     case 'point':
       return { point: pointLabel };
     case 'combined':
       return {
-        range: { start: startLabel, end: endLabel },
+        start: startLabel,
+        end: endLabel,
         point: pointLabel,
       };
   }

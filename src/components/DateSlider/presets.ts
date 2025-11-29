@@ -13,31 +13,32 @@ import type { DateSliderClassNames } from './type';
  */
 
 /**
- * Default preset - Clean blue theme with subtle transparency
+ * Default preset - Uses CSS variables for theme-aware styling
+ * Automatically adapts to light/dark mode via CSS variables
  */
 export const defaultPreset: DateSliderClassNames = {
-  wrapper: 'bg-white/90 backdrop-blur-sm rounded-2xl shadow-md',
-  slider: 'bg-gray-50/50',
-  track: 'bg-gray-200 rounded-full',
-  trackActive: 'bg-blue-500/30 rounded-full',
-  handle: 'bg-white border-2 border-blue-500 shadow-lg hover:shadow-xl',
-  handlePoint: 'bg-blue-500 border-blue-600',
-  handleStart: 'bg-blue-500 border-blue-600',
-  handleEnd: 'bg-blue-500 border-blue-600',
-  handleDragging: 'scale-125 shadow-2xl',
-  dateLabel: 'bg-blue-600 text-white text-sm px-3 py-1.5 rounded-lg shadow-md',
+  wrapper: 'bg-ds-background/90 backdrop-blur-sm rounded-2xl shadow-md',
+  slider: 'bg-ds-background/50',
+  track: 'bg-ds-track-base rounded-full',
+  trackActive: 'bg-ds-track-active/30 rounded-full',
+  handle: 'bg-ds-handle-bg border-2 border-ds-handle-border shadow-lg hover:shadow-xl',
+  handlePoint: 'bg-ds-primary border-ds-primary-dark',
+  handleStart: 'bg-ds-primary border-ds-primary-dark',
+  handleEnd: 'bg-ds-primary border-ds-primary-dark',
+  handleDragging: 'scale-125 shadow-2xl shadow-ds-shadow-colored/20',
+  dateLabel: 'bg-ds-label-bg text-ds-label-text text-sm px-3 py-1.5 rounded-lg shadow-md',
   dateLabelText: 'font-medium',
-  cursorLine: 'bg-blue-500/50',
-  scaleMark: 'bg-gray-400',
-  scaleMarkMajor: 'bg-gray-600',
-  scaleMarkMedium: 'bg-gray-500',
-  scaleMarkMinor: 'bg-gray-400',
-  scaleLabel: 'text-gray-700 font-medium text-xs',
-  timeUnitSelector: 'bg-gray-100 border-l border-gray-300',
-  timeUnitButton: 'hover:bg-gray-200',
-  timeUnitText: 'text-gray-700 font-semibold',
-  timeDisplay: 'bg-gray-100 rounded-xl border border-gray-300',
-  timeDisplayText: 'text-gray-700 font-semibold',
+  cursorLine: 'bg-ds-cursor-line/50',
+  scaleMark: 'bg-ds-scale-minor',
+  scaleMarkMajor: 'bg-ds-scale-major',
+  scaleMarkMedium: 'bg-ds-scale-medium',
+  scaleMarkMinor: 'bg-ds-scale-minor',
+  scaleLabel: 'text-ds-scale-text font-medium text-xs',
+  timeUnitSelector: 'bg-ds-selector-bg border-l border-ds-selector-border',
+  timeUnitButton: 'hover:bg-ds-selector-bg/80',
+  timeUnitText: 'text-ds-selector-text font-semibold',
+  timeDisplay: 'bg-ds-display-bg rounded-xl border border-ds-display-border',
+  timeDisplayText: 'text-ds-display-text font-semibold',
 };
 
 /**

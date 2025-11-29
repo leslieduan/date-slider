@@ -9,25 +9,18 @@ export type DragHandle = 'start' | 'end' | 'point' | null;
 // Re-export for convenience
 export type { DateGranularity };
 
-type RangeSelection = {
-  range: {
-    start: Date;
-    end: Date;
-  };
-};
-
-export type PointSelection = {
-  point: Date;
-};
-
+/**
+ * Time label for scale marks
+ */
 export type TimeLabel = {
   date: Date;
   position: number;
 };
 
-type CombinedSelection = RangeSelection & PointSelection;
-
-export type SelectionResult = RangeSelection | PointSelection | CombinedSelection;
+/**
+ * Selection result type - now unified with SliderValue
+ */
+export type SelectionResult = SliderValue;
 
 export type ScaleUnitConfig = {
   gap?: number;
@@ -118,16 +111,108 @@ export type DateSliderClassNames = {
   timeDisplayText?: string;
 };
 
-export type SliderProps = {
-  viewMode: ViewMode;
-  startDate: Date; // Must be UTC Date
-  endDate: Date; // Must be UTC Date
-  initialTimeUnit: TimeUnit;
-  initialRange?: { start: Date; end: Date }; // Must be UTC Dates
-  initialPoint?: Date; // Must be UTC Date
-  granularity?: DateGranularity; // Controls display granularity (day/hour/minute)
+/**
+ * Icon configuration for slider handles
+ */
+export type IconsConfig = {
+  /** Icon for point handle */
+  point?: ReactNode;
+  /** Icon for range start handle */
+  rangeStart?: ReactNode;
+  /** Icon for range end handle */
+  rangeEnd?: ReactNode;
+};
 
-  // Styling
+/**
+ * Behavior configuration for slider interactions
+ */
+export type BehaviorConfig = {
+  /** Enable horizontal scrolling when slider exceeds viewport width */
+  scrollable?: boolean;
+  /** Allow free datetime selection on track click (not limited to scale units) */
+  freeSelectionOnTrackClick?: boolean;
+  /** Keep date label visible persistently */
+  labelPersistent?: boolean;
+};
+
+/**
+ * Feature toggles for optional UI elements
+ */
+export type FeaturesConfig = {
+  /** Show time unit selector (day/month/year) */
+  timeUnitSelector?: boolean;
+  /** Show time display component */
+  timeDisplay?: boolean;
+};
+
+/**
+ * Layout and sizing configuration
+ */
+export type LayoutConfig = {
+  /** Slider width - 'fill' to fill parent, or specific number in pixels */
+  width?: 'fill' | number;
+  /** Slider height in pixels */
+  height?: number;
+  /** Horizontal padding for track in pixels */
+  trackPaddingX?: number;
+  /** Use fixed track width (disable responsive width) */
+  fixedTrackWidth?: boolean;
+  /** Show end label on scale */
+  showEndLabel?: boolean;
+  /** Minimum gap between scale units in pixels */
+  minGapScaleUnits?: number;
+  /** Custom scale unit sizing configuration */
+  scaleUnitConfig?: ScaleUnitConfig;
+};
+
+/**
+ * Point mode value
+ */
+export type PointValue = {
+  point: Date;
+};
+
+/**
+ * Range mode value
+ */
+export type RangeValue = {
+  start: Date;
+  end: Date;
+};
+
+/**
+ * Combined mode value (both point and range)
+ */
+export type CombinedValue = {
+  point: Date;
+  start: Date;
+  end: Date;
+};
+
+/**
+ * Union type for all slider value types
+ */
+export type SliderValue = PointValue | RangeValue | CombinedValue;
+
+/**
+ * Main props for DateSlider component with organized config groups
+ */
+export type SliderProps = {
+  // ===== Core Props (Required) =====
+  /** Slider mode - point, range, or combined */
+  mode: 'point' | 'range' | 'combined';
+  /** Current value of the slider - optional, will use defaults based on mode if not provided */
+  value?: SliderValue;
+  /** Callback when value changes */
+  onChange: (value: SliderValue) => void;
+  /** Minimum date (must be UTC) */
+  min: Date;
+  /** Maximum date (must be UTC) */
+  max: Date;
+  /** Initial time unit (day/month/year) */
+  initialTimeUnit: TimeUnit;
+
+  // ===== Grouped Configs (Optional) =====
   /**
    * Comprehensive className customization for all slider elements.
    * Use this for full control over component styling with Tailwind CSS.
@@ -144,22 +229,70 @@ export type SliderProps = {
    */
   classNames?: DateSliderClassNames;
 
-  pointHandleIcon?: ReactNode;
-  rangeHandleIcon?: ReactNode;
-  onChange: (selection: SelectionResult) => void;
-  scrollable?: boolean;
-  isTrackFixedWidth?: boolean;
-  minGapScaleUnits?: number;
-  scaleUnitConfig?: ScaleUnitConfig;
-  trackPaddingX?: number;
-  sliderWidth?: 'fill' | number; //fill means its width will fill parent.
-  sliderHeight?: number;
-  imperativeHandleRef?: React.Ref<SliderExposedMethod>;
-  withEndLabel?: boolean;
-  timeUnitSelectionEnabled?: boolean;
-  timeDisplayEnabled?: boolean;
-  freeSelectionOnTrackClick?: boolean; //if true, the datetime can be freely selected when click on track, if false, the selection will be limited to datetime per scale units.
-  labelPersistent?: boolean;
+  /**
+   * Icon configuration for slider handles
+   * @example
+   * ```tsx
+   * <DateSlider
+   *   icons={{
+   *     point: <CircleIcon />,
+   *     rangeStart: <ChevronLeftIcon />,
+   *     rangeEnd: <ChevronRightIcon />,
+   *   }}
+   * />
+   * ```
+   */
+  icons?: IconsConfig;
+
+  /**
+   * Behavior configuration for slider interactions
+   * @example
+   * ```tsx
+   * <DateSlider
+   *   behavior={{
+   *     scrollable: true,
+   *     freeSelectionOnTrackClick: true,
+   *     labelPersistent: false,
+   *   }}
+   * />
+   * ```
+   */
+  behavior?: BehaviorConfig;
+
+  /**
+   * Feature toggles for optional UI elements
+   * @example
+   * ```tsx
+   * <DateSlider
+   *   features={{
+   *     timeUnitSelector: true,
+   *     timeDisplay: true,
+   *   }}
+   * />
+   * ```
+   */
+  features?: FeaturesConfig;
+
+  /**
+   * Layout and sizing configuration
+   * @example
+   * ```tsx
+   * <DateSlider
+   *   layout={{
+   *     width: 'fill',
+   *     height: 120,
+   *     trackPaddingX: 16,
+   *   }}
+   * />
+   * ```
+   */
+  layout?: LayoutConfig;
+
+  // ===== Advanced Props (Optional) =====
+  /** Controls display granularity (day/hour/minute) */
+  granularity?: DateGranularity;
+  /** Imperative API reference for external control */
+  imperativeRef?: React.Ref<SliderExposedMethod>;
 };
 
 export type ScaleType = 'short' | 'medium' | 'long';

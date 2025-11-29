@@ -42,10 +42,10 @@ type Story = StoryObj<PresetStoryArgs>;
 const SelectionDisplay = memo(({ selection }: { selection?: SelectionResult }) => {
   if (!selection) return null;
   let result = '';
-  if ('range' in selection && 'point' in selection) {
-    result = `start: ${selection.range.start.toLocaleDateString()}\nend: ${selection.range.end.toLocaleDateString()}\npoint: ${selection.point.toLocaleDateString()}`;
-  } else if ('range' in selection) {
-    result = `start: ${selection.range.start.toLocaleDateString()}\nend: ${selection.range.end.toLocaleDateString()}`;
+  if ('start' in selection && 'point' in selection) {
+    result = `start: ${selection.start.toLocaleDateString()}\nend: ${selection.end.toLocaleDateString()}\npoint: ${selection.point.toLocaleDateString()}`;
+  } else if ('start' in selection) {
+    result = `start: ${selection.start.toLocaleDateString()}\nend: ${selection.end.toLocaleDateString()}`;
   } else if ('point' in selection) {
     result = `point: ${selection.point.toLocaleDateString()}`;
   }
@@ -96,13 +96,16 @@ const PresetTemplate = (args: PresetStoryArgs) => {
 
       <DateSlider
         {...args}
-        startDate={args.startDate ?? toUTCDate('2020-01-01')}
-        endDate={args.endDate ?? toUTCDate('2025-12-31')}
-        viewMode={args.viewMode ?? 'range'}
+        min={args.min ?? toUTCDate('2020-01-01')}
+        max={args.max ?? toUTCDate('2025-12-31')}
+        mode={args.mode ?? 'range'}
         initialTimeUnit={args.initialTimeUnit ?? 'month'}
         onChange={handleSelectionChange}
-        pointHandleIcon={<Circle size={20} />}
-        rangeHandleIcon={<MoveHorizontal size={20} />}
+        icons={{
+          point: <Circle size={20} />,
+          rangeStart: <MoveHorizontal size={20} />,
+          rangeEnd: <MoveHorizontal size={20} />,
+        }}
       />
 
       <SelectionDisplay selection={selection} />
@@ -116,13 +119,15 @@ const PresetTemplate = (args: PresetStoryArgs) => {
 export const Default: Story = {
   render: (args) => <PresetTemplate {...args} />,
   args: {
-    viewMode: 'range',
-    initialRange: {
+    mode: 'range',
+    value: {
       start: toUTCDate('2022-03-01'),
       end: toUTCDate('2022-09-01'),
     },
-    sliderWidth: 800,
-    sliderHeight: 120,
+    layout: {
+      width: 800,
+      height: 120,
+    },
     classNames: defaultPreset,
     title: 'Default Preset',
     description: 'Clean blue theme with subtle transparency - perfect for general use',
@@ -135,10 +140,14 @@ export const Default: Story = {
 export const Glass: Story = {
   render: (args) => <PresetTemplate {...args} />,
   args: {
-    viewMode: 'point',
-    initialPoint: toUTCDate('2023-06-15'),
-    sliderWidth: 800,
-    sliderHeight: 100,
+    mode: 'point',
+    value: {
+      point: toUTCDate('2023-06-15'),
+    },
+    layout: {
+      width: 800,
+      height: 100,
+    },
     classNames: glassPreset,
     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
     title: 'Glass Preset',
@@ -152,13 +161,15 @@ export const Glass: Story = {
 export const Minimal: Story = {
   render: (args) => <PresetTemplate {...args} />,
   args: {
-    viewMode: 'range',
-    initialRange: {
+    mode: 'range',
+    value: {
       start: toUTCDate('2021-01-01'),
       end: toUTCDate('2021-06-01'),
     },
-    sliderWidth: 800,
-    sliderHeight: 100,
+    layout: {
+      width: 800,
+      height: 100,
+    },
     classNames: minimalPreset,
     background: '#ffffff',
     title: 'Minimal Preset',
@@ -172,14 +183,16 @@ export const Minimal: Story = {
 export const Vibrant: Story = {
   render: (args) => <PresetTemplate {...args} />,
   args: {
-    viewMode: 'combined',
-    initialRange: {
+    mode: 'combined',
+    value: {
       start: toUTCDate('2022-01-01'),
       end: toUTCDate('2022-06-01'),
+      point: toUTCDate('2023-03-15'),
     },
-    initialPoint: toUTCDate('2023-03-15'),
-    sliderWidth: 900,
-    sliderHeight: 130,
+    layout: {
+      width: 900,
+      height: 130,
+    },
     classNames: vibrantPreset,
     background: 'linear-gradient(135deg, #fccb90 0%, #d57eeb 100%)',
     title: 'Vibrant Preset',
@@ -193,13 +206,15 @@ export const Vibrant: Story = {
 export const Corporate: Story = {
   render: (args) => <PresetTemplate {...args} />,
   args: {
-    viewMode: 'range',
-    initialRange: {
+    mode: 'range',
+    value: {
       start: toUTCDate('2023-01-01'),
       end: toUTCDate('2023-03-31'),
     },
-    sliderWidth: 800,
-    sliderHeight: 110,
+    layout: {
+      width: 800,
+      height: 110,
+    },
     classNames: corporatePreset,
     background: '#f8fafc',
     title: 'Corporate Preset',
@@ -213,10 +228,14 @@ export const Corporate: Story = {
 export const Dark: Story = {
   render: (args) => <PresetTemplate {...args} />,
   args: {
-    viewMode: 'point',
-    initialPoint: toUTCDate('2024-01-15'),
-    sliderWidth: 800,
-    sliderHeight: 100,
+    mode: 'point',
+    value: {
+      point: toUTCDate('2024-01-15'),
+    },
+    layout: {
+      width: 800,
+      height: 100,
+    },
     classNames: darkPreset,
     background: '#0f172a',
     title: 'Dark Preset',
@@ -272,20 +291,25 @@ export const AllPresets: Story = {
                 {name}
               </h3>
               <DateSlider
-                viewMode="range"
-                startDate={toUTCDate('2020-01-01')}
-                endDate={toUTCDate('2025-12-31')}
+                mode="range"
+                min={toUTCDate('2020-01-01')}
+                max={toUTCDate('2025-12-31')}
                 initialTimeUnit={'month' as TimeUnit}
-                initialRange={{
+                value={{
                   start: toUTCDate('2022-03-01'),
                   end: toUTCDate('2022-09-01'),
                 }}
-                sliderWidth="fill"
-                sliderHeight={80}
+                layout={{
+                  width: 'fill',
+                  height: 80,
+                }}
                 classNames={preset}
                 onChange={() => {}}
-                pointHandleIcon={<Circle size={16} />}
-                rangeHandleIcon={<MoveHorizontal size={16} />}
+                icons={{
+                  point: <Circle size={16} />,
+                  rangeStart: <MoveHorizontal size={16} />,
+                  rangeEnd: <MoveHorizontal size={16} />,
+                }}
               />
             </div>
           ))}
@@ -339,16 +363,18 @@ const ExtendingPresetsComponent = () => {
         }}
       >
         <DateSlider
-          viewMode="range"
-          startDate={toUTCDate('2020-01-01')}
-          endDate={toUTCDate('2025-12-31')}
+          mode="range"
+          min={toUTCDate('2020-01-01')}
+          max={toUTCDate('2025-12-31')}
           initialTimeUnit={'month' as TimeUnit}
-          initialRange={{
+          value={{
             start: toUTCDate('2022-03-01'),
             end: toUTCDate('2022-09-01'),
           }}
-          sliderWidth={800}
-          sliderHeight={100}
+          layout={{
+            width: 800,
+            height: 100,
+          }}
           classNames={{
             ...glassPreset,
             trackActive: 'bg-gradient-to-r from-orange-500/40 to-red-500/40 rounded-full',
@@ -359,8 +385,11 @@ const ExtendingPresetsComponent = () => {
               'bg-gradient-to-r from-orange-600 to-red-600 text-white px-4 py-2 rounded-xl',
           }}
           onChange={setSelection}
-          pointHandleIcon={<Circle size={20} />}
-          rangeHandleIcon={<MoveHorizontal size={20} />}
+          icons={{
+            point: <Circle size={20} />,
+            rangeStart: <MoveHorizontal size={20} />,
+            rangeEnd: <MoveHorizontal size={20} />,
+          }}
         />
       </div>
 
