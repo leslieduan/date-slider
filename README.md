@@ -35,10 +35,11 @@ yarn add date-slider-lib
 
 ```tsx
 import { DateSlider } from 'date-slider-lib';
+import type { SelectionResult, SliderExposedMethod } from 'date-slider-lib';
 import { Circle } from 'lucide-react';
 
 function App() {
-  const [selection, setSelection] = useState({
+  const [selection, setSelection] = useState<SelectionResult>({
     point: new Date('2024-06-15')
   });
 
@@ -54,6 +55,41 @@ function App() {
     />
   );
 }
+```
+
+### TypeScript Support
+
+DateSlider is written in TypeScript and exports all necessary types:
+
+```tsx
+import type {
+  // Main component types
+  SliderProps,           // Main props type
+  SelectionResult,       // onChange return type
+  SliderExposedMethod,   // Imperative API type
+
+  // Value types (for type guards)
+  PointValue,            // { point: Date }
+  RangeValue,            // { start: Date; end: Date }
+  CombinedValue,         // { point: Date; start: Date; end: Date }
+
+  // Configuration types
+  DateSliderClassNames,  // For classNames prop
+  LayoutConfig,          // For layout prop
+  BehaviorConfig,        // For behavior prop
+  RenderPropsConfig,     // For renderProps prop
+  IconsConfig,           // For icons prop
+
+  // Render prop parameter types (for custom renderers)
+  HandleRenderProps,
+  DateLabelRenderProps,
+  TimeDisplayRenderProps,
+  TimeUnitSelectionRenderProps,
+
+  // Utility types
+  TimeUnit,              // 'day' | 'month' | 'year'
+  DateGranularity,       // 'day' | 'hour' | 'minute'
+} from 'date-slider-lib';
 ```
 
 ## Modes
@@ -553,22 +589,35 @@ pnpm validate     # Run all checks
 
 ```
 src/
-├── components/
-│   ├── DateSlider/
-│   │   ├── DateSlider.tsx              # Main component
-│   │   ├── DateSlider.stories.tsx      # Storybook stories
-│   │   ├── type.ts                     # TypeScript types
-│   │   ├── constants.ts                # Constants
-│   │   ├── components/                 # Sub-components
-│   │   │   ├── SliderTrack.tsx
-│   │   │   ├── SliderHandle.tsx
-│   │   │   ├── DateLabel.tsx
-│   │   │   ├── TimeDisplay.tsx
-│   │   │   └── TimeUnitSelection.tsx
-│   │   ├── hooks/                      # Custom hooks
-│   │   └── utils/                      # Utility functions
-│   └── Button/
-└── index.ts                            # Library entry point
+├── components/                      # DateSlider components
+│   ├── DateSlider.tsx              # Main component
+│   ├── DateSlider.stories.tsx      # Storybook stories
+│   ├── SliderTrack.tsx             # Track with scales
+│   ├── SliderHandle.tsx            # Draggable handles
+│   ├── DateLabel.tsx               # Floating date labels
+│   ├── TimeDisplay.tsx             # Date navigation display
+│   ├── TimeUnitSelection.tsx       # Time unit selector
+│   └── index.ts
+├── hooks/                          # Custom React hooks
+│   ├── useDateLabelPersist.ts      # Label persistence logic
+│   ├── useDragState.ts             # Drag state management
+│   ├── useEventHandlers.ts         # Event handlers
+│   ├── useFocusManagement.ts       # Focus management
+│   ├── usePositionState.ts         # Position calculations
+│   ├── useDrag.ts                  # Generic drag hook
+│   ├── useElementSize.ts           # Element size observer
+│   ├── useResizeObserver.ts        # Resize observer
+│   └── useRAFDFn.ts                # RAF debouncing
+├── utils/                          # Utility functions
+│   ├── dateSliderUtils.ts          # Date calculations
+│   ├── cn.ts                       # Tailwind class merger
+│   ├── clamp.ts                    # Number clamping
+│   ├── debounce.ts                 # Debounce utility
+│   └── snapToClosestStep.ts        # Snapping logic
+├── type.ts                         # TypeScript types
+├── constants.ts                    # Constants
+├── index.css                       # Global styles
+└── index.ts                        # Library entry point
 ```
 
 ## Tech Stack
