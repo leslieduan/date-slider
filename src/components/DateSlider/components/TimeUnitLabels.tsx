@@ -1,6 +1,6 @@
 import { memo, useCallback, useMemo } from 'react';
 
-import type { TimeLabel, TimeLabelsProps } from '../type';
+import type { TimeLabel, TimeUnitLabelsProps } from '../type';
 import { formatForDisplay } from '../utils';
 
 export const TimeUnitLabels = memo(
@@ -11,7 +11,7 @@ export const TimeUnitLabels = memo(
     minDistance = 40,
     withEndLabel = true,
     classNames,
-  }: TimeLabelsProps) => {
+  }: TimeUnitLabelsProps) => {
     const getVisibleLabels = useCallback((): TimeLabel[] => {
       if (!timeLabels.length || !scales.length) return [];
       const visible: TimeLabel[] = [];

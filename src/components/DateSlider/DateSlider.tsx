@@ -52,11 +52,11 @@ export const DateSlider = memo(
     max: propEndDate,
     initialTimeUnit,
     onChange,
+    renderProps,
     // Grouped configs
     classNames,
     icons,
     behavior,
-    features,
     layout,
     // Advanced
     granularity = 'day',
@@ -73,10 +73,6 @@ export const DateSlider = memo(
     const scrollable = behavior?.scrollable ?? true;
     const freeSelectionOnTrackClick = behavior?.freeSelectionOnTrackClick ?? false;
     const labelPersistent = behavior?.labelPersistent;
-
-    // Extract features config with defaults
-    const timeUnitSelectionEnabled = features?.timeUnitSelector ?? true;
-    const timeDisplayEnabled = features?.timeDisplay ?? false;
 
     // Extract layout config with defaults
     const sliderWidth = layout?.width;
@@ -430,7 +426,6 @@ export const DateSlider = memo(
       );
       debouncedOnChange(selection);
     }, [debouncedOnChange, endDate, pointPosition, rangeEnd, rangeStart, startDate, viewMode]);
-
     return (
       <div
         className={cn('flex min-w-40', classNames?.wrapper, {
@@ -448,14 +443,14 @@ export const DateSlider = memo(
         aria-label={ACCESSIBILITY.SLIDER_ARIA_LABEL}
       >
         {/* Time display and date selection operation */}
-        {timeDisplayEnabled && (
+        {renderProps?.renderTimeDisplay && (
           <TimeDisplay
             startDate={startDate}
             endDate={endDate}
             position={pointPosition}
             granularity={granularity}
             setDateTime={setDateTime}
-            classNames={classNames}
+            renderTimeDisplay={renderProps?.renderTimeDisplay}
           />
         )}
 
@@ -494,7 +489,9 @@ export const DateSlider = memo(
                   pointHandleRef={pointHandleRef}
                   labelPersistent={labelPersistent}
                   classNames={classNames}
+                  renderDateLabel={renderProps?.renderDateLabel}
                 />
+                {/* TODO: move TimeUnitLabels to SliderTrack?*/}
                 <TimeUnitLabels
                   timeLabels={timeLabels}
                   scales={scales}
@@ -523,6 +520,7 @@ export const DateSlider = memo(
                   isSliderDragging={isSliderDragging}
                   labelPersistent={labelPersistent}
                   classNames={classNames}
+                  renderDateLabel={renderProps?.renderDateLabel}
                 />
               </div>
             </div>
@@ -530,13 +528,13 @@ export const DateSlider = memo(
         </div>
 
         {/* toggle time unit */}
-        {timeUnitSelectionEnabled && (
+        {renderProps?.renderTimeUnitSelection && (
           <TimeUnitSelection
             isMonthValid={checkDateDuration(startDate, endDate).moreThanOneMonth}
             isYearValid={checkDateDuration(startDate, endDate).moreThanOneYear}
             onChange={handleTimeUnitChange}
             initialTimeUnit={initialTimeUnit}
-            classNames={classNames}
+            renderTimeUnitSelection={renderProps.renderTimeUnitSelection}
           />
         )}
       </div>

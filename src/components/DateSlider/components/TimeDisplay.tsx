@@ -1,20 +1,6 @@
-import { ArrowDownIcon } from 'lucide-react';
 import { useMemo } from 'react';
-
-import { Button } from '@/components/Button';
-import { cn } from '@/utils';
-
-import type { DateGranularity, DateSliderClassNames, DragHandle } from '../type';
+import type { TimeDisplayProps } from '../type';
 import { addTime, formatForDisplay, getDateFromPercent } from '../utils';
-
-type TimeDisplayProps = {
-  position: number;
-  startDate: Date;
-  endDate: Date;
-  granularity: DateGranularity;
-  setDateTime: (date: Date, target?: DragHandle) => void;
-  classNames?: DateSliderClassNames;
-};
 
 export const TimeDisplay = ({
   position,
@@ -22,7 +8,7 @@ export const TimeDisplay = ({
   endDate,
   granularity,
   setDateTime,
-  classNames,
+  renderTimeDisplay,
 }: TimeDisplayProps) => {
   const dateLabel = useMemo(() => {
     const date = getDateFromPercent(position, startDate, endDate);
@@ -37,28 +23,9 @@ export const TimeDisplay = ({
     const newDate = addTime(currentDate, amount, unit);
     setDateTime(newDate, 'point');
   };
-
-  return (
-    <div
-      className={cn('flex rounded-xl overflow-hidden pointer-events-auto', classNames?.timeDisplay)}
-    >
-      <div className="h-full flex items-center justify-center md:w-28">
-        <p
-          className={cn(
-            classNames?.timeDisplayText || 'text-slate-700 font-semibold text-xs md:text-base'
-          )}
-        >
-          {dateLabel}
-        </p>
-      </div>
-      <div className="h-full  items-center hidden md:flex">
-        <Button variant="ghost" onClick={() => handleDateUpdate('backward')} className="p-0!">
-          <ArrowDownIcon className="rotate-90 text-black" />
-        </Button>
-        <Button variant="ghost" onClick={() => handleDateUpdate('forward')} className="p-0!">
-          <ArrowDownIcon className="rotate-270 text-black" />
-        </Button>
-      </div>
-    </div>
-  );
+  return renderTimeDisplay({
+    dateLabel,
+    toNextDate: () => handleDateUpdate('forward'),
+    toPrevDate: () => handleDateUpdate('backward'),
+  });
 };

@@ -103,11 +103,6 @@ const Scales = memo(
 );
 Scales.displayName = 'Scales';
 
-// Updated props type to include touch event handler
-type UpdatedSliderTrackProps = SliderTrackProps & {
-  onTrackTouch: (e: React.TouchEvent) => void;
-};
-
 export const SliderTrack = memo(
   ({
     onTrackClick,
@@ -122,8 +117,9 @@ export const SliderTrack = memo(
     endHandleRef,
     pointHandleRef,
     classNames,
+    renderDateLabel,
     ...props
-  }: UpdatedSliderTrackProps) => {
+  }: SliderTrackProps) => {
     const [isHoverTrack, setIsHoverTrack] = useState(false);
     const [isHandleHover, setIsHandleHover] = useState(false);
 
@@ -272,7 +268,7 @@ export const SliderTrack = memo(
               label={dateLabel}
               position={labelPosition}
               labelPersistent
-              classNames={classNames}
+              renderDateLabel={renderDateLabel}
             />
           )}
 
@@ -315,12 +311,7 @@ export const SliderTrack = memo(
 
           {/* Date label */}
           {showDateLabel && (
-            <DateLabel
-              label={dateLabel}
-              position={labelPosition}
-              labelPersistent
-              classNames={classNames}
-            />
+            <DateLabel label={dateLabel} position={labelPosition} labelPersistent />
           )}
 
           {/* Active track */}

@@ -1,11 +1,20 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { Circle, MoveHorizontal, Triangle } from 'lucide-react';
+import { ArrowDownIcon, Circle, MoveHorizontal, TriangleIcon } from 'lucide-react';
 import { memo, useCallback, useRef, useState } from 'react';
 
 import { Button } from '../Button';
 import { DateSlider } from './DateSlider';
-import type { SelectionResult, SliderExposedMethod, SliderProps, TimeUnit } from './type';
+import type {
+  DateLabelRenderProps,
+  SelectionResult,
+  SliderExposedMethod,
+  SliderProps,
+  TimeDisplayRenderProps,
+  TimeUnit,
+  TimeUnitSelectionRenderProps,
+} from './type';
 import { toUTCDate } from './utils';
+import { cn } from '@/utils';
 
 const meta: Meta<typeof DateSlider> = {
   title: 'Components/DateSlider',
@@ -36,6 +45,71 @@ const meta: Meta<typeof DateSlider> = {
 
 export default meta;
 type Story = StoryObj<Partial<SliderProps>>;
+
+const timeDisplayContent = ({ toNextDate, toPrevDate, dateLabel }: TimeDisplayRenderProps) => {
+  return (
+    <div className={cn('flex rounded-xl overflow-hidden pointer-events-auto')}>
+      <div className="h-full flex items-center justify-center md:w-28">
+        <p className={cn('text-slate-700 font-semibold text-xs md:text-base')}>{dateLabel}</p>
+      </div>
+      <div className="h-full  items-center hidden md:flex">
+        <Button variant="ghost" onClick={toPrevDate} className="p-0!">
+          <ArrowDownIcon className="rotate-90 text-black" />
+        </Button>
+        <Button variant="ghost" onClick={toNextDate} className="p-0!">
+          <ArrowDownIcon className="rotate-270 text-black" />
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+const timeUnitSelectionContent = ({
+  timeUnit,
+  handleTimeUnitNextSelect,
+  handleTimeUnitPreviousSelect,
+  isNextBtnDisabled,
+  isPrevBtnDisabled,
+}: TimeUnitSelectionRenderProps) => {
+  return (
+    <div className={cn('border-l pointer-events-auto h-full')}>
+      <div className={cn('flex flex-col grow-0 shrink-0 items-center h-full w-16 mx-auto')}>
+        <p className={cn('text-center text-base font-bold text-slate-700')}>
+          {timeUnit.toUpperCase()}
+        </p>
+        <div className="flex flex-col justify-between">
+          <Button
+            aria-label="previous time unit"
+            size={'icon-only'}
+            variant={'ghost'}
+            onClick={handleTimeUnitPreviousSelect}
+            disabled={isPrevBtnDisabled()}
+          >
+            <TriangleIcon className="text-ds-selector-text" />
+          </Button>
+          <Button
+            aria-label="next time unit"
+            size={'icon-only'}
+            variant={'ghost'}
+            className={'rotate-180'}
+            onClick={handleTimeUnitNextSelect}
+            disabled={isNextBtnDisabled()}
+          >
+            <TriangleIcon className={'text-ds-selector-text'} />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const renderDateLabel = ({ label }: DateLabelRenderProps) => {
+  return (
+    <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded whitespace-nowrap shadow-sm">
+      {label}
+    </span>
+  );
+};
 
 // Memoized selection display component
 const SelectionDisplay = memo(({ selection }: { selection?: SelectionResult }) => {
@@ -177,40 +251,31 @@ const DateSliderTemplate = (args: Partial<SliderProps>) => {
     return (
       <div
         style={{
-          padding: 32,
-          background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-          minHeight: 500,
+          backgroundColor: 'bluewhite',
+          padding: '24px',
           borderRadius: '8px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
         }}
       >
-        <div
-          style={{
-            backgroundColor: 'white',
-            padding: '24px',
-            borderRadius: '8px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+        <DateSlider
+          mode="point"
+          value={value}
+          min={args.min ?? toUTCDate('2000-01-01')}
+          max={args.max ?? toUTCDate('2030-12-31')}
+          initialTimeUnit={args.initialTimeUnit ?? 'day'}
+          granularity={args.granularity ?? 'day'}
+          onChange={handleSelectionChange}
+          imperativeRef={sliderMethodRef}
+          icons={{
+            point: <Circle />,
           }}
-        >
-          <DateSlider
-            mode="point"
-            value={value}
-            min={args.min ?? toUTCDate('2000-01-01')}
-            max={args.max ?? toUTCDate('2030-12-31')}
-            initialTimeUnit={args.initialTimeUnit ?? 'day'}
-            granularity={args.granularity ?? 'day'}
-            onChange={handleSelectionChange}
-            imperativeRef={sliderMethodRef}
-            icons={{
-              point: <Circle />,
-            }}
-            classNames={args.classNames}
-            behavior={args.behavior}
-            features={args.features}
-            layout={args.layout}
-          />
-          <SelectionDisplay selection={selection} />
-          <ControlButtons sliderMethodRef={sliderMethodRef} viewMode="point" />
-        </div>
+          classNames={args.classNames}
+          behavior={args.behavior}
+          layout={args.layout}
+          renderProps={args.renderProps}
+        />
+        <SelectionDisplay selection={selection} />
+        <ControlButtons sliderMethodRef={sliderMethodRef} viewMode="point" />
       </div>
     );
   } else if (mode === 'range') {
@@ -221,41 +286,32 @@ const DateSliderTemplate = (args: Partial<SliderProps>) => {
     return (
       <div
         style={{
-          padding: 32,
-          background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-          minHeight: 500,
+          backgroundColor: 'white',
+          padding: '24px',
           borderRadius: '8px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
         }}
       >
-        <div
-          style={{
-            backgroundColor: 'white',
-            padding: '24px',
-            borderRadius: '8px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+        <DateSlider
+          mode="range"
+          value={value}
+          min={args.min ?? toUTCDate('2000-01-01')}
+          max={args.max ?? toUTCDate('2030-12-31')}
+          initialTimeUnit={args.initialTimeUnit ?? 'day'}
+          granularity={args.granularity ?? 'day'}
+          onChange={handleSelectionChange}
+          imperativeRef={sliderMethodRef}
+          icons={{
+            rangeStart: <MoveHorizontal />,
+            rangeEnd: <MoveHorizontal />,
           }}
-        >
-          <DateSlider
-            mode="range"
-            value={value}
-            min={args.min ?? toUTCDate('2000-01-01')}
-            max={args.max ?? toUTCDate('2030-12-31')}
-            initialTimeUnit={args.initialTimeUnit ?? 'day'}
-            granularity={args.granularity ?? 'day'}
-            onChange={handleSelectionChange}
-            imperativeRef={sliderMethodRef}
-            icons={{
-              rangeStart: <MoveHorizontal />,
-              rangeEnd: <MoveHorizontal />,
-            }}
-            classNames={args.classNames}
-            behavior={args.behavior}
-            features={args.features}
-            layout={args.layout}
-          />
-          <SelectionDisplay selection={selection} />
-          <ControlButtons sliderMethodRef={sliderMethodRef} viewMode="range" />
-        </div>
+          classNames={args.classNames}
+          behavior={args.behavior}
+          layout={args.layout}
+          renderProps={args.renderProps}
+        />
+        <SelectionDisplay selection={selection} />
+        <ControlButtons sliderMethodRef={sliderMethodRef} viewMode="range" />
       </div>
     );
   } else {
@@ -270,42 +326,33 @@ const DateSliderTemplate = (args: Partial<SliderProps>) => {
     return (
       <div
         style={{
-          padding: 32,
-          background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-          minHeight: 500,
+          backgroundColor: 'white',
+          padding: '24px',
           borderRadius: '8px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
         }}
       >
-        <div
-          style={{
-            backgroundColor: 'white',
-            padding: '24px',
-            borderRadius: '8px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+        <DateSlider
+          mode="combined"
+          value={value}
+          min={args.min ?? toUTCDate('2000-01-01')}
+          max={args.max ?? toUTCDate('2030-12-31')}
+          initialTimeUnit={args.initialTimeUnit ?? 'day'}
+          granularity={args.granularity ?? 'day'}
+          onChange={handleSelectionChange}
+          imperativeRef={sliderMethodRef}
+          icons={{
+            point: <Circle />,
+            rangeStart: <MoveHorizontal />,
+            rangeEnd: <MoveHorizontal />,
           }}
-        >
-          <DateSlider
-            mode="combined"
-            value={value}
-            min={args.min ?? toUTCDate('2000-01-01')}
-            max={args.max ?? toUTCDate('2030-12-31')}
-            initialTimeUnit={args.initialTimeUnit ?? 'day'}
-            granularity={args.granularity ?? 'day'}
-            onChange={handleSelectionChange}
-            imperativeRef={sliderMethodRef}
-            icons={{
-              point: <Circle />,
-              rangeStart: <MoveHorizontal />,
-              rangeEnd: <MoveHorizontal />,
-            }}
-            classNames={args.classNames}
-            behavior={args.behavior}
-            features={args.features}
-            layout={args.layout}
-          />
-          <SelectionDisplay selection={selection} />
-          <ControlButtons sliderMethodRef={sliderMethodRef} viewMode="combined" />
-        </div>
+          classNames={args.classNames}
+          behavior={args.behavior}
+          layout={args.layout}
+          renderProps={args.renderProps}
+        />
+        <SelectionDisplay selection={selection} />
+        <ControlButtons sliderMethodRef={sliderMethodRef} viewMode="combined" />
       </div>
     );
   }
@@ -333,6 +380,10 @@ export const RangeMode: Story = {
       track: 'bg-gray-400',
       timeUnitSelector: 'bg-gray-300 p-3 rounded-lg border border-indigo-200',
     },
+    renderProps: {
+      renderTimeUnitSelection: timeUnitSelectionContent,
+      renderDateLabel: renderDateLabel,
+    },
   },
 };
 
@@ -354,6 +405,10 @@ export const PointMode: Story = {
       trackActive: 'bg-green-400/20',
       track: 'bg-gray-400',
       timeUnitSelector: 'bg-gray-300 p-3 rounded-lg border border-indigo-200',
+    },
+    renderProps: {
+      renderTimeUnitSelection: timeUnitSelectionContent,
+      renderDateLabel: renderDateLabel,
     },
   },
 };
@@ -380,6 +435,10 @@ export const CombinedMode: Story = {
       track: 'bg-gray-300',
       timeUnitSelector: 'bg-gray-300 p-3 rounded-lg border border-indigo-200',
     },
+    renderProps: {
+      renderTimeUnitSelection: timeUnitSelectionContent,
+      renderDateLabel: renderDateLabel,
+    },
   },
 };
 
@@ -403,6 +462,10 @@ export const FixedTRackWidthSlider: Story = {
       trackActive: 'bg-orange-400/20',
       track: 'bg-gray-400',
       timeUnitSelector: 'bg-gray-300 p-3 rounded-lg border border-indigo-200',
+    },
+    renderProps: {
+      renderTimeUnitSelection: timeUnitSelectionContent,
+      renderDateLabel: renderDateLabel,
     },
   },
 };
@@ -432,6 +495,10 @@ export const CustomStyles: Story = {
       track: 'bg-gray-400 border border-gray-200',
       timeUnitSelector: 'bg-gray-300 p-3 rounded-lg border border-indigo-200',
     },
+    renderProps: {
+      renderTimeUnitSelection: timeUnitSelectionContent,
+      renderDateLabel: renderDateLabel,
+    },
   },
 };
 
@@ -458,6 +525,10 @@ export const YearlyOverview: Story = {
       trackActive: 'bg-rose-400/20',
       track: 'bg-gray-300',
       timeUnitSelector: 'bg-gray-300 p-3 rounded-lg border border-indigo-200',
+    },
+    renderProps: {
+      renderTimeUnitSelection: timeUnitSelectionContent,
+      renderDateLabel: renderDateLabel,
     },
   },
 };
@@ -489,88 +560,44 @@ export const ScrollableSlider: Story = {
       track: 'bg-gray-300',
       timeUnitSelector: 'bg-gray-300 p-3 rounded-lg border border-indigo-200',
     },
+    renderProps: {
+      renderTimeUnitSelection: timeUnitSelectionContent,
+      renderDateLabel: renderDateLabel,
+    },
   },
 };
 
-// Frosted glass component wrapper for proper hook usage
-const FrostedGlassTemplate = (args: Partial<SliderProps>) => {
-  const [_, setSelection] = useState<SelectionResult>();
-
-  const handleSelect = useCallback((newSelection: SelectionResult) => {
-    setSelection(newSelection);
-  }, []);
-
-  const min = args.min ?? toUTCDate('2020-01-01');
-  const max = args.max ?? toUTCDate('2020-02-10');
-
-  // This template only supports point mode
-  const value =
-    args.value && 'point' in args.value ? args.value : { point: toUTCDate('2020-01-15') };
-
-  return (
-    <div
-      style={{
-        padding: 32,
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        minHeight: 400,
-        borderRadius: '8px',
-      }}
-    >
-      <DateSlider
-        mode="point"
-        value={value}
-        initialTimeUnit={args.initialTimeUnit ?? 'day'}
-        granularity={args.granularity ?? 'day'}
-        min={min}
-        max={max}
-        icons={{
-          point: <Triangle className="text-slate-700 fill-slate-700" size={24} />,
-        }}
-        classNames={{
-          slider: 'frosted',
-          timeUnitSelector: 'frosted',
-          timeDisplay: 'frosted',
-          trackActive: 'hidden',
-          ...args.classNames,
-        }}
-        onChange={handleSelect}
-        behavior={{
-          scrollable: true,
-          ...args.behavior,
-        }}
-        layout={{
-          scaleUnitConfig: {
-            gap: 100,
-            width: { short: 1, medium: 2, long: 2 },
-            height: { short: 18, medium: 36, long: 60 },
-          },
-          height: 64,
-          width: 'fill',
-          showEndLabel: false,
-          ...args.layout,
-        }}
-        features={{
-          timeUnitSelector: false,
-          timeDisplay: true,
-          ...args.features,
-        }}
-      />
-    </div>
-  );
-};
-
 export const FrostedGlass: Story = {
-  render: (args: Partial<SliderProps>) => <FrostedGlassTemplate {...args} />,
+  render: (args: Partial<SliderProps>) => <DateSliderTemplate {...args} />,
   args: {
     mode: 'point',
     value: {
       point: toUTCDate('2020-01-15'),
     },
+    classNames: {
+      slider: 'frosted',
+      timeUnitSelector: 'frosted',
+      timeDisplay: 'frosted',
+      trackActive: 'hidden',
+    },
     min: toUTCDate('2020-01-01'),
     max: toUTCDate('2020-02-10'),
     initialTimeUnit: 'day' as TimeUnit,
-    features: {
-      timeUnitSelector: true,
+    behavior: { scrollable: true },
+    layout: {
+      scaleUnitConfig: {
+        gap: 100,
+        width: { short: 1, medium: 2, long: 2 },
+        height: { short: 18, medium: 36, long: 60 },
+      },
+      height: 64,
+      width: 'fill',
+      showEndLabel: false,
+    },
+    renderProps: {
+      renderTimeDisplay: timeDisplayContent,
+      renderTimeUnitSelection: timeUnitSelectionContent,
+      renderDateLabel: renderDateLabel,
     },
   },
 };

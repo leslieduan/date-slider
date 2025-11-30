@@ -74,11 +74,6 @@ export type DateSliderClassNames = {
   /** Icon wrapper inside handle */
   handleIcon?: string;
 
-  // Labels & Text
-  /** Hover date label (tooltip) */
-  dateLabel?: string;
-  /** Text inside the date label */
-  dateLabelText?: string;
   /** Scale tick mark labels */
   scaleLabel?: string;
 
@@ -136,16 +131,6 @@ export type BehaviorConfig = {
 };
 
 /**
- * Feature toggles for optional UI elements
- */
-export type FeaturesConfig = {
-  /** Show time unit selector (day/month/year) */
-  timeUnitSelector?: boolean;
-  /** Show time display component */
-  timeDisplay?: boolean;
-};
-
-/**
  * Layout and sizing configuration
  */
 export type LayoutConfig = {
@@ -195,6 +180,78 @@ export type CombinedValue = {
 export type SliderValue = PointValue | RangeValue | CombinedValue;
 
 /**
+ * Render prop types for custom element rendering
+ */
+
+/** Props passed to custom handle renderer */
+export type HandleRenderProps = {
+  /** Handle type: 'point', 'start', or 'end' */
+  handleType: DragHandle;
+  /** Position as percentage (0-100) */
+  position: number;
+  /** Formatted date label */
+  label: string;
+  /** Icon element for the handle */
+  icon: ReactNode;
+  /** Whether this handle is currently being dragged */
+  isDragging: boolean;
+  /** Whether any handle on the slider is being dragged */
+  isSliderDragging: boolean;
+  /** Mouse down event handler */
+  onMouseDown: (e: React.MouseEvent) => void;
+  /** Touch start event handler */
+  onTouchStart: (e: React.TouchEvent) => void;
+  /** Key down event handler for keyboard navigation */
+  onKeyDown: (e: React.KeyboardEvent) => void;
+  /** Focus event handler */
+  onFocus: (e: React.FocusEvent<HTMLButtonElement>) => void;
+  /** Button ref for imperative control */
+  ref: RefObject<HTMLButtonElement | null>;
+  /** Whether date label should persist */
+  labelPersistent?: boolean;
+  /** Min value for aria */
+  min: number;
+  /** Max value for aria */
+  max: number;
+  /** Current value for aria */
+  value: number;
+  /** ClassNames configuration */
+  classNames?: DateSliderClassNames;
+  /** View mode */
+  viewMode?: ViewMode;
+};
+
+/** Props passed to custom date label renderer */
+export type DateLabelRenderProps = {
+  label?: string;
+};
+
+export type TimeDisplayRenderProps = {
+  toNextDate: () => void;
+  toPrevDate: () => void;
+  dateLabel: string;
+};
+
+export type TimeUnitSelectionRenderProps = {
+  timeUnit: TimeUnit;
+  handleTimeUnitNextSelect: () => void;
+  handleTimeUnitPreviousSelect: () => void;
+  isNextBtnDisabled: () => boolean;
+  isPrevBtnDisabled: () => boolean;
+};
+/**
+ * Render prop function types
+ */
+export type RenderPropsConfig = {
+  /** Custom date label renderer */
+  renderDateLabel?: (props: DateLabelRenderProps) => ReactNode;
+  /** Custom TimeDisplay renderer */
+  renderTimeDisplay?: (props: TimeDisplayRenderProps) => ReactNode;
+  /** Custom TimeUnitSelection renderer */
+  renderTimeUnitSelection?: (props: TimeUnitSelectionRenderProps) => ReactNode;
+};
+
+/**
  * Common props shared across all slider modes
  */
 type CommonSliderProps = {
@@ -204,6 +261,8 @@ type CommonSliderProps = {
   max: Date;
   /** Initial time unit (day/month/year) */
   initialTimeUnit: TimeUnit;
+  /** Change event handler */
+  onChange: (value: SliderValue) => void;
 
   // ===== Grouped Configs (Optional) =====
   /**
@@ -238,20 +297,6 @@ type CommonSliderProps = {
   behavior?: BehaviorConfig;
 
   /**
-   * Feature toggles for optional UI elements
-   * @example
-   * ```tsx
-   * <DateSlider
-   *   features={{
-   *     timeUnitSelector: true,
-   *     timeDisplay: true,
-   *   }}
-   * />
-   * ```
-   */
-  features?: FeaturesConfig;
-
-  /**
    * Layout and sizing configuration
    * @example
    * ```tsx
@@ -265,6 +310,22 @@ type CommonSliderProps = {
    * ```
    */
   layout?: LayoutConfig;
+
+  /**
+   * Custom render props for complete control over component rendering
+   * @example
+   * ```tsx
+   * <DateSlider
+   *   renderHandle={(props) => (
+   *     <CustomHandle {...props} className="my-custom-handle" />
+   *   )}
+   *   renderLabel={(props) => (
+   *     <div style={props.position}>{props.label}</div>
+   *   )}
+   * />
+   * ```
+   */
+  renderProps?: RenderPropsConfig;
 
   // ===== Advanced Props (Optional) =====
   /** Controls display granularity (day/hour/minute) */
@@ -282,8 +343,7 @@ type PointModeSliderProps = {
   mode: 'point';
   /** Current point value - optional, defaults to min date if not provided */
   value?: PointValue;
-  /** Callback when value changes */
-  onChange: (value: SliderValue) => void;
+
   /** Icon configuration - only point icon is used */
   icons?: {
     point?: ReactNode;
@@ -301,8 +361,7 @@ type RangeModeSliderProps = {
   mode: 'range';
   /** Current range value - optional, defaults to min-max range if not provided */
   value?: RangeValue;
-  /** Callback when value changes */
-  onChange: (value: SliderValue) => void;
+
   /** Icon configuration - only range icons are used */
   icons?: {
     point?: never;
@@ -320,8 +379,7 @@ type CombinedModeSliderProps = {
   mode: 'combined';
   /** Current combined value - optional, defaults to sensible values if not provided */
   value?: CombinedValue;
-  /** Callback when value changes */
-  onChange: (value: SliderValue) => void;
+
   /** Icon configuration - all icons can be used */
   icons?: {
     point?: ReactNode;
@@ -375,6 +433,7 @@ type BaseSliderTrackProps = {
   pointHandleRef: React.RefObject<HTMLButtonElement | null>;
   labelPersistent?: boolean;
   classNames?: DateSliderClassNames;
+  renderDateLabel?: (props: DateLabelRenderProps) => ReactNode;
 };
 
 type PointModeProps = {
@@ -415,6 +474,8 @@ export type SliderHandleProps = {
   viewMode?: 'point' | 'range' | 'combined';
   isSliderDragging?: boolean;
   classNames?: DateSliderClassNames;
+  labelPersistent?: boolean;
+  renderDateLabel?: (props: DateLabelRenderProps) => ReactNode;
 };
 
 export type RenderSliderHandleProps = {
@@ -438,6 +499,7 @@ export type RenderSliderHandleProps = {
   isSliderDragging: boolean;
   labelPersistent?: boolean;
   classNames?: DateSliderClassNames;
+  renderDateLabel?: (props: DateLabelRenderProps) => ReactNode;
 };
 
 export type TimeUnitSelectionProps = {
@@ -445,14 +507,31 @@ export type TimeUnitSelectionProps = {
   isMonthValid: boolean;
   isYearValid: boolean;
   onChange: (timeUnit: TimeUnit) => void;
-  classNames?: DateSliderClassNames;
+  renderTimeUnitSelection: (props: TimeUnitSelectionRenderProps) => ReactNode;
 };
 
-export type TimeLabelsProps = {
+export type TimeDisplayProps = {
+  position: number;
+  startDate: Date;
+  endDate: Date;
+  granularity: DateGranularity;
+  setDateTime: (date: Date, target?: DragHandle) => void;
+  renderTimeDisplay: (props: TimeDisplayRenderProps) => ReactNode;
+};
+
+export type TimeUnitLabelsProps = {
   timeLabels: TimeLabel[];
   scales: Scale[];
   trackWidth: number;
   minDistance?: number;
   withEndLabel?: boolean;
   classNames?: DateSliderClassNames;
+};
+
+export type DateLabelProps = {
+  position?: { x: number; y: number };
+  label?: string;
+  immediateDisappear?: boolean;
+  labelPersistent?: boolean;
+  renderDateLabel?: (props: DateLabelRenderProps) => ReactNode;
 };
