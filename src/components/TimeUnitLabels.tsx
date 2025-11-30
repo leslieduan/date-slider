@@ -1,7 +1,6 @@
+import type { TimeUnitLabelsProps, TimeLabel } from '@/type';
+import { formatForDisplay } from '@/utils';
 import { memo, useCallback, useMemo } from 'react';
-
-import type { TimeLabel, TimeUnitLabelsProps } from '../type';
-import { formatForDisplay } from '../utils';
 
 export const TimeUnitLabels = memo(
   ({

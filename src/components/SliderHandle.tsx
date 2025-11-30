@@ -1,9 +1,7 @@
+import type { SliderHandleProps, RenderSliderHandleProps } from '@/type';
+import { cn, formatForDisplay, getDateFromPercent } from '@/utils';
 import { memo } from 'react';
-import { cn } from '@/utils';
-import type { RenderSliderHandleProps, SliderHandleProps } from '../type';
-import { formatForDisplay, getDateFromPercent } from '../utils';
 import { DateLabel } from './DateLabel';
-import { Button } from '@/components/Button';
 
 export const SliderHandle = ({
   onDragging,
@@ -44,12 +42,12 @@ export const SliderHandle = ({
   const handleDraggingClass = onDragging ? classNames?.handleDragging : '';
 
   return (
-    <Button
+    <button
       ref={ref}
-      size={'icon'}
-      variant={'ghost'}
+      type="button"
       className={cn(
-        'group absolute pointer-events-auto z-20 transform -translate-x-1/2 transition-all duration-50 hover:scale-110 hover:bg-transparent active:bg-transparent touch-none top-0',
+        'group absolute cursor-pointer z-20 transform -translate-x-1/2 transition-all duration-50 hover:scale-110 hover:bg-transparent active:bg-transparent touch-none top-0',
+        'w-9 h-9 inline-flex items-center justify-center rounded-md',
         'focus-visible:outline focus-visible:outline-offset-2',
         'motion-reduce:transition-none',
         handleBaseClass,
@@ -80,7 +78,7 @@ export const SliderHandle = ({
           renderDateLabel={renderDateLabel}
         />
       )}
-    </Button>
+    </button>
   );
 };
 

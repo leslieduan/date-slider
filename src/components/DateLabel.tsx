@@ -1,8 +1,8 @@
+import { useDateLabelPersist } from '@/hooks';
+import type { DateLabelProps } from '@/type';
 import { cn } from '@/utils';
 import { memo } from 'react';
 import { createPortal } from 'react-dom';
-import { useDateLabelPersist } from '../hooks';
-import type { DateLabelProps } from '../type';
 
 export const DateLabel = memo(
   ({ position, label, immediateDisappear, labelPersistent, renderDateLabel }: DateLabelProps) => {

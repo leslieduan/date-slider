@@ -45,18 +45,17 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { ChevronLeft, ChevronRight, Circle, MoveHorizontal } from 'lucide-react';
 import { memo, useCallback, useRef, useState } from 'react';
 
-import { Button } from '../Button';
 import { DateSlider } from './DateSlider';
 import type {
-  DateLabelRenderProps,
+  SliderProps,
   SelectionResult,
   SliderExposedMethod,
-  SliderProps,
+  DateLabelRenderProps,
   TimeDisplayRenderProps,
-  TimeUnit,
   TimeUnitSelectionRenderProps,
-} from './type';
-import { toUTCDate } from './utils';
+  TimeUnit,
+} from '@/type';
+import { toUTCDate } from '@/utils';
 
 const meta: Meta<typeof DateSlider> = {
   title: 'Components/DateSlider',
@@ -138,51 +137,56 @@ const ControlButtons = memo(
       <div className="mt-4 flex flex-wrap gap-2">
         {(viewMode === 'point' || viewMode === 'combined') && (
           <>
-            <Button
+            <button
               onClick={() => handleSetDateTime(toUTCDate('2022-01-01'), 'point')}
-              variant="outline"
-              size="sm"
+              className="cursor-pointer h-8 rounded-md px-3 border border-gray-200 bg-white shadow-sm hover:bg-gray-50 text-sm font-medium transition-colors"
             >
               Set Point to 2022-01-01
-            </Button>
-            <Button onClick={() => handleFocusHandle('point')} variant="outline" size="sm">
+            </button>
+            <button
+              onClick={() => handleFocusHandle('point')}
+              className="cursor-pointer h-8 rounded-md px-3 border border-gray-200 bg-white shadow-sm hover:bg-gray-50 text-sm font-medium transition-colors"
+            >
               Focus Point Handle
-            </Button>
+            </button>
           </>
         )}
 
         {(viewMode === 'range' || viewMode === 'combined') && (
           <>
-            <Button
+            <button
               onClick={() => handleSetDateTime(toUTCDate('2021-06-01'), 'start')}
-              variant="outline"
-              size="sm"
+              className="cursor-pointer h-8 rounded-md px-3 border border-gray-200 bg-white shadow-sm hover:bg-gray-50 text-sm font-medium transition-colors"
             >
               Set Range Start to 2021-06-01
-            </Button>
-            <Button
+            </button>
+            <button
               onClick={() => handleSetDateTime(toUTCDate('2021-09-01'), 'end')}
-              variant="outline"
-              size="sm"
+              className="cursor-pointer h-8 rounded-md px-3 border border-gray-200 bg-white shadow-sm hover:bg-gray-50 text-sm font-medium transition-colors"
             >
               Set Range End to 2021-09-01
-            </Button>
-            <Button onClick={() => handleFocusHandle('start')} variant="outline" size="sm">
+            </button>
+            <button
+              onClick={() => handleFocusHandle('start')}
+              className="cursor-pointer h-8 rounded-md px-3 border border-gray-200 bg-white shadow-sm hover:bg-gray-50 text-sm font-medium transition-colors"
+            >
               Focus Start Handle
-            </Button>
-            <Button onClick={() => handleFocusHandle('end')} variant="outline" size="sm">
+            </button>
+            <button
+              onClick={() => handleFocusHandle('end')}
+              className="cursor-pointer h-8 rounded-md px-3 border border-gray-200 bg-white shadow-sm hover:bg-gray-50 text-sm font-medium transition-colors"
+            >
               Focus End Handle
-            </Button>
+            </button>
           </>
         )}
 
-        <Button
+        <button
           onClick={() => handleSetDateTime(new Date(Date.now()))}
-          variant="secondary"
-          size="sm"
+          className="cursor-pointer h-8 rounded-md px-3 bg-gray-100 text-gray-900 shadow-sm hover:bg-gray-200 text-sm font-medium transition-colors"
         >
           Set to Current Date
-        </Button>
+        </button>
       </div>
     );
   }
@@ -208,7 +212,7 @@ const customTimeDisplayRenderer = ({
     <div className="flex items-center gap-1 bg-white rounded-lg px-2 py-1.5 shadow-sm border border-gray-300 w-40 shrink-0">
       <button
         onClick={toPrevDate}
-        className="p-1 hover:bg-blue-50 rounded transition-colors shrink-0"
+        className="p-1 hover:bg-blue-50 rounded transition-colors shrink-0 cursor-pointer"
         aria-label="Previous date"
       >
         <ChevronLeft className="w-4 h-4 text-gray-700" />
@@ -216,7 +220,7 @@ const customTimeDisplayRenderer = ({
       <span className="text-sm font-semibold text-gray-900 flex-1 text-center">{dateLabel}</span>
       <button
         onClick={toNextDate}
-        className="p-1 hover:bg-blue-50 rounded transition-colors shrink-0"
+        className="p-1 hover:bg-blue-50 rounded transition-colors shrink-0 cursor-pointer"
         aria-label="Next date"
       >
         <ChevronRight className="w-4 h-4 text-gray-700" />
@@ -237,7 +241,7 @@ const customTimeUnitSelectionRenderer = ({
       <button
         onClick={handleTimeUnitPreviousSelect}
         disabled={isPrevBtnDisabled()}
-        className="p-1 hover:bg-blue-50 rounded transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+        className="p-1 hover:bg-blue-50 rounded transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0 cursor-pointer"
         aria-label="Previous time unit"
       >
         <ChevronLeft className="w-3 h-3 text-gray-700 rotate-90" />
@@ -246,7 +250,7 @@ const customTimeUnitSelectionRenderer = ({
       <button
         onClick={handleTimeUnitNextSelect}
         disabled={isNextBtnDisabled()}
-        className="p-1 hover:bg-blue-50 rounded transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+        className="p-1 hover:bg-blue-50 rounded transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0 cursor-pointer"
         aria-label="Next time unit"
       >
         <ChevronRight className="w-3 h-3 text-gray-700 rotate-90" />
@@ -843,18 +847,18 @@ const AccessibilityTemplate = () => {
           <div className="p-4 bg-gray-50 rounded border border-gray-200">
             <h3 className="font-semibold text-gray-900 mb-3">Programmatic Control</h3>
             <div className="space-y-2">
-              <Button
+              <button
                 onClick={handleFocusStart}
-                className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm"
+                className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm font-medium cursor-pointer"
               >
                 Focus Start Handle
-              </Button>
-              <Button
+              </button>
+              <button
                 onClick={handleFocusEnd}
-                className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm"
+                className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm font-medium cursor-pointer"
               >
                 Focus End Handle
-              </Button>
+              </button>
             </div>
           </div>
         </div>

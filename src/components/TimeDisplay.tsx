@@ -1,6 +1,6 @@
+import type { TimeDisplayProps } from '@/type';
+import { getDateFromPercent, formatForDisplay, addTime } from '@/utils';
 import { useMemo } from 'react';
-import type { TimeDisplayProps } from '../type';
-import { addTime, formatForDisplay, getDateFromPercent } from '../utils';
 
 export const TimeDisplay = ({
   position,

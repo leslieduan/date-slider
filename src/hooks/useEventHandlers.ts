@@ -1,14 +1,13 @@
-import { useCallback, useEffect } from 'react';
-
-import { clampToLowerBound, snapToClosestStep } from '@/utils';
-
-import { PERCENTAGE } from '../constants';
-import type { DragHandle, TimeUnit, ViewMode } from '../type';
+import { PERCENTAGE } from '@/constants';
+import type { TimeUnit, ViewMode, DragHandle } from '@/type';
 import {
-  getAllScalesPercentage,
-  getPercentageFromMouseEvent,
   getPercentageFromTouchEvent,
-} from '../utils/utils';
+  getPercentageFromMouseEvent,
+  clampToLowerBound,
+  getAllScalesPercentage,
+  snapToClosestStep,
+} from '@/utils';
+import { useCallback, useEffect } from 'react';
 
 /**
  * Custom hook to manage all user interaction event handlers for the slider.

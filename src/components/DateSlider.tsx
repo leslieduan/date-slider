@@ -8,40 +8,44 @@ import {
   useState,
 } from 'react';
 
-import { useDrag, useElementSize, useRAFDFn, useResizeObserver } from '@/hooks';
-import { checkDateDuration, clamp, clampPercent, cn, debounce } from '@/utils';
-
 import {
-  RenderSliderHandle,
-  SliderTrack,
-  TimeDisplay,
-  TimeUnitLabels,
-  TimeUnitSelection,
-} from './components';
-import {
-  ACCESSIBILITY,
-  DEFAULT_SCALE_CONFIG,
-  DEFAULTS,
-  LAYOUT,
-  PERCENTAGE,
-  TIMING,
-} from './constants';
-import {
+  useDrag,
+  useElementSize,
   useEventHandlers,
   useFocusManagement,
-  useHandlerDragState as useHandleDragState,
+  useHandleDragState,
   useInitialAutoScrollPosition,
   usePositionState,
-} from './hooks';
-import type { DragHandle, SelectionResult, SliderProps, TimeUnit } from './type';
+  useRAFDFn,
+  useResizeObserver,
+} from '@/hooks';
 import {
+  checkDateDuration,
+  clamp,
+  clampPercent,
+  cn,
   createSelectionResult,
+  debounce,
   generateScalesWithInfo,
   generateTimeLabelsWithPositions,
   generateTrackWidth,
   getPercentFromDate,
   getTotalScales,
-} from './utils';
+} from '@/utils';
+import {
+  LAYOUT,
+  DEFAULTS,
+  DEFAULT_SCALE_CONFIG,
+  PERCENTAGE,
+  TIMING,
+  ACCESSIBILITY,
+} from '@/constants';
+import type { SliderProps, TimeUnit, DragHandle, SelectionResult } from '@/type';
+import { RenderSliderHandle } from './SliderHandle';
+import { SliderTrack } from './SliderTrack';
+import { TimeDisplay } from './TimeDisplay';
+import { TimeUnitLabels } from './TimeUnitLabels';
+import { TimeUnitSelection } from './TimeUnitSelection';
 
 export const DateSlider = memo(
   ({

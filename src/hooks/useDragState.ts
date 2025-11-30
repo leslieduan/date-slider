@@ -1,7 +1,6 @@
+import { TIMING } from '@/constants';
+import type { DragHandle } from '@/type';
 import { useCallback, useState } from 'react';
-
-import { TIMING } from '../constants';
-import type { DragHandle } from '../type';
 
 /**
  * Custom hook to manage drag state for slider handles.
@@ -11,7 +10,7 @@ import type { DragHandle } from '../type';
  *
  * @returns Drag state and control functions
  */
-export function useHandlerDragState() {
+export function useHandleDragState() {
   const [isHandleDragging, setIsHandleDragging] = useState<DragHandle>(null);
   const [handleDragStarted, setHandleDragStarted] = useState(false);
 

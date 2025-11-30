@@ -386,6 +386,122 @@ Maintain consistent track appearance:
 />
 ```
 
+## Architecture
+
+### UTC-First Design
+
+DateSlider follows a **"UTC Everywhere, Display Locally"** architecture:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  CONSUMER LAYER (Your Code)                             │
+│  - All dates are UTC Date objects                       │
+│  - Use toUTCDate() helper to convert                    │
+└─────────────────┬───────────────────────────────────────┘
+                  │
+                  ↓
+┌─────────────────────────────────────────────────────────┐
+│  DATESLIDER (UTC Dates Only)                            │
+│  - All Date props must be UTC Date objects              │
+│  - All calculations use UTC methods                     │
+│  - Single source of truth                               │
+└─────────────────┬───────────────────────────────────────┘
+                  │
+                  ↓
+┌─────────────────────────────────────────────────────────┐
+│  DISPLAY LAYER (User Interface)                         │
+│  - Formats dates for visual display                     │
+│  - Shows dates in UTC (configurable locale)             │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Why UTC?**
+
+1. **Unambiguous**: No DST or timezone confusion
+2. **Consistent**: Same timestamp for all users globally
+3. **Scalable**: Works for days, hours, minutes
+4. **Future-proof**: Adding time granularity requires zero changes
+
+## Best Practices
+
+### Store Dates as UTC
+
+```tsx
+// ✅ CORRECT - Use UTC Date objects
+<DateSlider
+  min={new Date('2024-01-01')}
+  max={new Date('2024-12-31')}
+  value={{ point: new Date('2024-06-15') }}
+/>
+
+// ❌ WRONG - Don't use date strings directly
+<DateSlider
+  min="2024-01-01"  // TypeScript error
+/>
+```
+
+### Type Your Callbacks
+
+```tsx
+const handleChange = useCallback((selection: SelectionResult) => {
+  if ('point' in selection) {
+    // TypeScript knows this is PointSelection
+    const date = selection.point;
+    console.log(date.toISOString());
+  }
+}, []);
+```
+
+### Use Memoization for Performance
+
+```tsx
+const minDate = useMemo(() => new Date('2024-01-01'), []);
+const maxDate = useMemo(() => new Date('2024-12-31'), []);
+
+<DateSlider min={minDate} max={maxDate} />
+```
+
+## Troubleshooting
+
+### Dates are off by one day
+
+**Cause:** Not using UTC Date objects properly
+
+**Solution:** Ensure all dates are valid UTC Date objects:
+```tsx
+// ✅ CORRECT
+const date = new Date('2024-01-15T00:00:00Z');  // Explicit UTC
+
+// ❌ WRONG
+const date = new Date('2024-01-15');  // May use local timezone
+```
+
+### Handle not focusing programmatically
+
+**Cause:** Using imperativeRef incorrectly
+
+**Solution:**
+```tsx
+const sliderRef = useRef<SliderExposedMethod>(null);
+
+// ✅ CORRECT
+sliderRef.current?.focusHandle('point');
+
+<DateSlider imperativeRef={sliderRef} />
+```
+
+### TypeScript errors with discriminated unions
+
+**Cause:** Not narrowing the type properly
+
+**Solution:**
+```tsx
+// ✅ CORRECT - Type guard
+if ('point' in value) {
+  return <DateSlider mode="point" value={value} />;
+}
+```
+
 ## Accessibility
 
 DateSlider is built with accessibility in mind:

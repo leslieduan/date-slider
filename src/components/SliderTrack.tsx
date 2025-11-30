@@ -1,13 +1,13 @@
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { cn } from '@/utils';
-import type { ScaleType, SliderTrackProps } from '../type';
+import type { ScaleType, SliderTrackProps } from '@/type';
 import {
-  calculateLabelPosition,
+  cn,
+  getPercentageFromMouseEvent,
   formatForDisplay,
   getDateFromPercent,
-  getPercentageFromMouseEvent,
+  calculateLabelPosition,
   getPercentageFromTouchEvent,
-} from '../utils';
+} from '@/utils';
+import { memo, useCallback, useState, useEffect, useMemo } from 'react';
 import { DateLabel } from './DateLabel';
 
 const CursorLine = memo(

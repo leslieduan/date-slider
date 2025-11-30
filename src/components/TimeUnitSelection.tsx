@@ -1,6 +1,5 @@
-import { memo, useEffect, useRef, useState } from 'react';
-
-import type { TimeUnit, TimeUnitSelectionProps } from '../type';
+import type { TimeUnit, TimeUnitSelectionProps } from '@/type';
+import { memo, useState, useRef, useEffect } from 'react';
 
 const TIME_UNITS: Array<TimeUnit> = ['day', 'month', 'year'];
 

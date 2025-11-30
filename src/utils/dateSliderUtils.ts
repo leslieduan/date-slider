@@ -9,7 +9,7 @@ import type {
   TimeLabel,
   TimeUnit,
   ViewMode,
-} from '@/components/DateSlider/type';
+} from '@/type';
 import { clampPercent } from '@/utils';
 
 /**

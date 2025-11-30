@@ -1,9 +1,6 @@
+import type { TimeUnit } from '@/type';
+import { getTotalScales, clampPercent } from '@/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
-
-import { clampPercent } from '@/utils';
-
-import type { TimeUnit } from '../type';
-import { getTotalScales } from '../utils/utils';
 
 /**
  * Custom hook to manage slider position state (range start/end and point position).
