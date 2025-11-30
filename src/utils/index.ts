@@ -3,8 +3,4 @@ export * from './clamp';
 export * from './clampToLowerBound';
 export * from './cn';
 export * from './debounce';
-export * from './getScaledDimensions';
-export * from './getViewPortSize';
-export * from './isScrollableElement';
-export * from './sleep';
 export * from './snapToClosestStep';
