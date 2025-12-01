@@ -641,3 +641,8 @@ export type DateLabelProps = {
   handleLabelDisabled?: boolean;
   renderDateLabel?: (props: DateLabelRenderProps) => ReactNode;
 };
+
+export type Dimension = {
+  sliderContainerWidth: number;
+  trackContainerWidth: number;
+};

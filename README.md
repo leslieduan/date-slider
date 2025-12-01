@@ -185,6 +185,76 @@ Select both a point and a range simultaneously.
 />
 ```
 
+## Layout & Width Behavior
+
+The DateSlider uses a flexible layout system with configurable width modes.
+
+### Component Structure
+
+```
+DateSlider (main container)
+├── TimeDisplay (optional)
+├── SliderContainer (scrollable viewport) ← flex-1
+│   └── Track (actual slider with scales)
+└── TimeUnitSelection (optional)
+```
+
+### Width Modes
+
+**1. Fill Parent Container** (default when `layout.width` is not specified or set to `'fill'`):
+```tsx
+<DateSlider
+  layout={{ width: 'fill' }}  // Fills parent width
+  // ...
+/>
+```
+- Sets `width: 100%` on the container
+- Slider adapts to parent's width
+- Best for responsive layouts
+
+**2. Fixed Width**:
+```tsx
+<DateSlider
+  layout={{ width: 800 }}  // Fixed 800px width
+  // ...
+/>
+```
+- Sets explicit width in pixels
+- Slider has a fixed size
+- Best for controlled layouts
+
+### Track Behavior
+
+The track (the part with scales and handles) can behave differently based on `behavior.scrollable`:
+
+**Scrollable Track** (`scrollable: true`, default):
+- Track width is calculated from: `(number of scales × scale width) + gaps`
+- If track is wider than SliderContainer, horizontal scrolling is enabled
+- Track is contained in the scrollable viewport
+
+**Fixed Track** (`scrollable: false`):
+- Track width is always `100%` of SliderContainer
+- No horizontal scrolling
+- All scales fit within the visible area
+
+### Example: Full Layout Control
+
+```tsx
+<DateSlider
+  mode="point"
+  layout={{
+    width: 'fill',        // or specific number like 800
+    height: 120,          // Slider height in pixels
+    trackPaddingX: 24,    // Horizontal padding for track
+    showEndLabel: true,   // Show end date label
+  }}
+  behavior={{
+    scrollable: true,     // Enable horizontal scrolling
+  }}
+  // ...
+/>
+```
+
 ## Customization
 
 DateSlider is built with Tailwind CSS and offers extensive customization through the `classNames` prop.
