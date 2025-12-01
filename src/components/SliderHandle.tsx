@@ -46,10 +46,9 @@ export const SliderHandle = ({
       ref={ref}
       type="button"
       className={cn(
-        'group absolute cursor-pointer z-20 transform -translate-x-1/2 transition-all duration-50 hover:scale-110 hover:bg-transparent active:bg-transparent touch-none top-0',
+        'group absolute cursor-pointer z-20 transform -translate-x-1/2 hover:scale-110 hover:bg-transparent active:bg-transparent touch-none top-0',
         'w-9 h-9 inline-flex items-center justify-center rounded-md',
         'focus-visible:outline focus-visible:outline-offset-2',
-        'motion-reduce:transition-none',
         handleBaseClass,
         handleSpecificClass,
         handleDraggingClass || (onDragging ? 'scale-110' : '')
