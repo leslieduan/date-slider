@@ -26,12 +26,37 @@ A powerful, fully customizable React date slider component with range, point, an
 ### Installation
 
 ```bash
-npm install date-slider-lib
+npm install date-slider-lib lucide-react
 # or
-pnpm install date-slider-lib
+pnpm add date-slider-lib lucide-react
 # or
-yarn add date-slider-lib
+yarn add date-slider-lib lucide-react
 ```
+
+### Setup
+
+**1. Import the CSS** (required for styling):
+
+```tsx
+// In your main file (e.g., App.tsx or main.tsx)
+import 'date-slider-lib/style.css';
+```
+
+**2. Configure Tailwind CSS** (if using Tailwind in your project):
+
+```js
+// tailwind.config.js
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+    "./node_modules/date-slider-lib/dist/**/*.{js,mjs,cjs}", // Add this line
+  ],
+  // ...
+}
+```
+
+> **Note**: The library uses inline styles for critical layout properties, so it works even without Tailwind configuration. However, configuring Tailwind ensures all styling classes are available for customization.
 
 ### Basic Usage
 
@@ -157,6 +182,76 @@ Select both a point and a range simultaneously.
     rangeStart: <MoveHorizontal />,
     rangeEnd: <MoveHorizontal />
   }}
+/>
+```
+
+## Layout & Width Behavior
+
+The DateSlider uses a flexible layout system with configurable width modes.
+
+### Component Structure
+
+```
+DateSlider (main container)
+├── TimeDisplay (optional)
+├── SliderContainer (scrollable viewport) ← flex-1
+│   └── Track (actual slider with scales)
+└── TimeUnitSelection (optional)
+```
+
+### Width Modes
+
+**1. Fill Parent Container** (default when `layout.width` is not specified or set to `'fill'`):
+```tsx
+<DateSlider
+  layout={{ width: 'fill' }}  // Fills parent width
+  // ...
+/>
+```
+- Sets `width: 100%` on the container
+- Slider adapts to parent's width
+- Best for responsive layouts
+
+**2. Fixed Width**:
+```tsx
+<DateSlider
+  layout={{ width: 800 }}  // Fixed 800px width
+  // ...
+/>
+```
+- Sets explicit width in pixels
+- Slider has a fixed size
+- Best for controlled layouts
+
+### Track Behavior
+
+The track (the part with scales and handles) can behave differently based on `behavior.scrollable`:
+
+**Scrollable Track** (`scrollable: true`, default):
+- Track width is calculated from: `(number of scales × scale width) + gaps`
+- If track is wider than SliderContainer, horizontal scrolling is enabled
+- Track is contained in the scrollable viewport
+
+**Fixed Track** (`scrollable: false`):
+- Track width is always `100%` of SliderContainer
+- No horizontal scrolling
+- All scales fit within the visible area
+
+### Example: Full Layout Control
+
+```tsx
+<DateSlider
+  mode="point"
+  layout={{
+    width: 'fill',        // or specific number like 800
+    height: 120,          // Slider height in pixels
+    trackPaddingX: 24,    // Horizontal padding for track
+    showEndLabel: true,   // Show end date label
+  }}
+  behavior={{
+    scrollable: true,     // Enable horizontal scrolling
+  }}
+  // ...
 />
 ```
 

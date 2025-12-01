@@ -1,3 +1,4 @@
+import type { Dimension } from '@/type';
 import { useEffect, useRef } from 'react';
 
 //if the slider is scrollable, auto scroll to center the selected date/range on initial render
@@ -11,7 +12,7 @@ export const useInitialAutoScrollPosition = ({
   resetPosition,
 }: {
   scrollable: boolean;
-  dimensions: { parent: number; slider: number };
+  dimensions: Dimension;
   viewMode: 'point' | 'range' | 'combined';
   pointPosition: number;
   rangeStart: number;
@@ -23,8 +24,8 @@ export const useInitialAutoScrollPosition = ({
   useEffect(() => {
     if (
       !scrollable ||
-      dimensions.parent === 0 ||
-      dimensions.slider === 0 ||
+      dimensions.sliderContainerWidth === 0 ||
+      dimensions.trackContainerWidth === 0 ||
       hasAutoScrolledRef.current
     ) {
       return;
@@ -43,12 +44,12 @@ export const useInitialAutoScrollPosition = ({
     }
 
     // Calculate the scroll offset to center the target
-    const targetPixel = (targetPercent / 100) * dimensions.slider;
-    const centerOffset = dimensions.parent / 2;
+    const targetPixel = (targetPercent / 100) * dimensions.trackContainerWidth;
+    const centerOffset = dimensions.sliderContainerWidth / 2;
     const scrollOffset = -(targetPixel - centerOffset);
 
     // Clamp to valid scroll bounds
-    const maxScroll = Math.min(0, dimensions.parent - dimensions.slider);
+    const maxScroll = Math.min(0, dimensions.sliderContainerWidth - dimensions.trackContainerWidth);
     const clampedOffset = Math.max(maxScroll, Math.min(0, scrollOffset));
 
     resetPosition({ x: clampedOffset, y: 0 });

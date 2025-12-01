@@ -40,7 +40,7 @@ import {
   TIMING,
   ACCESSIBILITY,
 } from '@/constants';
-import type { SliderProps, TimeUnit, DragHandle, SelectionResult } from '@/type';
+import type { SliderProps, TimeUnit, DragHandle, SelectionResult, Dimension } from '@/type';
 import { RenderSliderHandle } from './SliderHandle';
 import { SliderTrack } from './SliderTrack';
 import { TimeDisplay } from './TimeDisplay';
@@ -83,11 +83,15 @@ export const DateSlider = memo(
     const sliderWidth = layout?.width;
     const sliderHeight = layout?.height;
     const trackPaddingX = layout?.trackPaddingX ?? LAYOUT.TRACK_PADDING_X;
-    const isTrackFixedWidth = layout?.fixedTrackWidth ?? false;
+    // if not scrollable, track is fixed with, which is 100% of slider container width.
+    const isTrackFixedWidth = !scrollable;
     const withEndLabel = layout?.showEndLabel ?? true;
     const minGapScaleUnits = layout?.minGapScaleUnits ?? DEFAULTS.MIN_GAP_SCALE_UNITS;
     const scaleUnitConfig = layout?.scaleUnitConfig ?? DEFAULT_SCALE_CONFIG;
-    const [dimensions, setDimensions] = useState({ parent: 0, slider: 0 });
+    const [dimensions, setDimensions] = useState<Dimension>({
+      sliderContainerWidth: 0,
+      trackContainerWidth: 0,
+    });
     const [timeUnit, setTimeUnit] = useState<TimeUnit>(initialTimeUnit);
 
     /**
@@ -154,7 +158,7 @@ export const DateSlider = memo(
       size: { width: sliderContainerWidth },
     } = useElementSize<HTMLDivElement>();
 
-    const sliderRef = useRef<HTMLDivElement>(null);
+    const trackContainerRef = useRef<HTMLDivElement>(null);
     const trackRef = useRef<HTMLDivElement>(null);
 
     const { scales, numberOfScales } = useMemo(
@@ -185,23 +189,23 @@ export const DateSlider = memo(
     );
 
     const updateDimensions = useCallback(() => {
-      if (sliderContainerRef?.current && sliderRef.current) {
-        const parentWidth = sliderContainerRef.current.getBoundingClientRect().width;
-        const trackWidth = sliderRef.current.getBoundingClientRect().width;
-        setDimensions({ parent: parentWidth, slider: trackWidth });
+      if (sliderContainerRef?.current && trackContainerRef.current) {
+        const sliderContainerWidth = sliderContainerRef.current.getBoundingClientRect().width;
+        const trackContainerWidth = trackContainerRef.current.getBoundingClientRect().width;
+        setDimensions({ sliderContainerWidth, trackContainerWidth });
       }
     }, [sliderContainerRef]);
 
     const scheduleUpdateDimensions = useRAFDFn(updateDimensions);
 
-    useResizeObserver(sliderRef || { current: null }, scheduleUpdateDimensions);
+    useResizeObserver(trackContainerRef || { current: null }, scheduleUpdateDimensions);
 
     const dragBounds = useMemo(
       () => ({
-        left: Math.min(0, dimensions.parent - dimensions.slider),
+        left: Math.min(0, dimensions.sliderContainerWidth - dimensions.trackContainerWidth),
         right: 0,
       }),
-      [dimensions.parent, dimensions.slider]
+      [dimensions.sliderContainerWidth, dimensions.trackContainerWidth]
     );
 
     const autoScrollToVisibleAreaEnabled = useRef(false);
@@ -212,7 +216,7 @@ export const DateSlider = memo(
       isDragging: isSliderDragging,
       resetPosition,
     } = useDrag({
-      targetRef: scrollable ? sliderRef : undefined,
+      targetRef: scrollable ? trackContainerRef : undefined,
       initialPosition: { x: 0, y: 0 },
       constrainToAxis: 'x',
       bounds: dragBounds,
@@ -249,12 +253,12 @@ export const DateSlider = memo(
       const distanceFromLeftEdge = pointHandleRect.left - containerRect.left;
 
       if (distanceFromRightEdge < 0) {
-        const newX = sliderPosition.x - dimensions.parent / 2;
+        const newX = sliderPosition.x - dimensions.sliderContainerWidth / 2;
         const clampedX = Math.max(newX, dragBounds.left);
         resetPosition({ x: clampedX, y: 0 });
         autoScrollToVisibleAreaEnabled.current = false;
       } else if (distanceFromLeftEdge < 0) {
-        const newX = sliderPosition.x + dimensions.parent / 2;
+        const newX = sliderPosition.x + dimensions.sliderContainerWidth / 2;
         const clampedX = Math.min(newX, dragBounds.right);
         resetPosition({ x: clampedX, y: 0 });
         autoScrollToVisibleAreaEnabled.current = false;
@@ -404,7 +408,7 @@ export const DateSlider = memo(
       isHandleDragging,
       trackRef,
       handleDragComplete,
-      sliderRef,
+      trackContainerRef,
       handleDragStarted,
       isSliderDragging,
       totalScaleUnits,
@@ -437,21 +441,44 @@ export const DateSlider = memo(
       debouncedOnChange(selection);
     }, [debouncedOnChange, endDate, pointPosition, rangeEnd, rangeStart, startDate, viewMode]);
     return (
+      // Date Slider wrapper
       <div
-        className={cn('flex min-w-40', classNames?.wrapper, {
-          'w-full': sliderWidth === 'fill',
-        })}
+        className={cn('flex', classNames?.wrapper)}
         style={
-          sliderWidth !== 'fill'
+          sliderWidth === 'fill'
             ? {
                 height: sliderHeight ?? LAYOUT.DEFAULT_SLIDER_HEIGHT,
-                width: sliderWidth,
+                width: '100%',
+                minWidth: LAYOUT.MIN_SLIDER_WIDTH,
               }
-            : { height: sliderHeight ?? LAYOUT.DEFAULT_SLIDER_HEIGHT }
+            : {
+                height: sliderHeight ?? LAYOUT.DEFAULT_SLIDER_HEIGHT,
+                width: sliderWidth,
+                minWidth: LAYOUT.MIN_SLIDER_WIDTH,
+              }
         }
         role="group"
         aria-label={ACCESSIBILITY.SLIDER_ARIA_LABEL}
       >
+        {/*
+          Layout Architecture:
+          - DateSlider wrapper width = TimeDisplay + SliderContainer + TimeUnitSelection (flex layout)
+          - SliderContainer is the scrollable viewport (flex-1)
+          - Track is the actual slider with scales, contained in SliderContainer
+
+          Width Modes:
+          1. 'fill' mode: Sets width: 100%, fills parent container. DateSlider wrapper width same as parent, SliderContainer width is flex-1, fill remaining width besides
+          TimeUnitSelection and TimeDisplay. 
+          2. Specified width: Sets explicit width in pixels. DateSlider wrapper width is specified width, SliderContainer width is flex-1, fill remaining width besides
+          TimeUnitSelection and TimeDisplay. 
+          3. Undefined: Uses flex sizing without width constraint. DateSlider wrapper width will fit content, largest to fill its parent div or screen. SliderContainer 
+          width is flex-1, fill remaining width besides TimeUnitSelection and TimeDisplay. 
+
+          Track Behavior:
+          - Scrollable (default): Track width = calculated from scales, enables horizontal scroll if needed
+          - Fixed: Track width = 100% of SliderContainer, no scrolling
+        */}
+
         {/* Time display and date selection operation */}
         {renderProps?.renderTimeDisplay && (
           <TimeDisplay
@@ -464,22 +491,33 @@ export const DateSlider = memo(
           />
         )}
 
-        {/* Date slider */}
-        <div ref={sliderContainerRef} className="overflow-hidden h-full flex-1 rounded-2xl">
+        {/* Date slider container */}
+        <div
+          ref={sliderContainerRef}
+          className="overflow-hidden flex-1 rounded-2xl"
+          style={{ height: '100%' }}
+        >
+          {/* Track width, this trackContainerRef div width = track width + 2*trackPaddingX */}
           <div
-            className="h-full"
-            style={isTrackFixedWidth ? { width: '100%' } : { width: trackWidth }}
-            ref={sliderRef}
+            // if track width is fixed, it will fill the width of slider container, it cannot be scrolled.
+            style={
+              isTrackFixedWidth
+                ? { width: '100%', height: '100%' }
+                : { width: trackWidth, height: '100%' }
+            }
+            ref={trackContainerRef}
             {...dragHandlers}
           >
             <div
               style={{
                 paddingLeft: trackPaddingX,
                 paddingRight: trackPaddingX,
+                height: '100%',
+                width: '100%',
               }}
-              className={cn('h-full w-full pointer-events-auto', classNames?.slider)}
+              className={cn('pointer-events-auto', classNames?.slider)}
             >
-              <div className="relative h-full w-full" ref={trackRef}>
+              <div className="relative" style={{ height: '100%', width: '100%' }} ref={trackRef}>
                 <SliderTrack
                   mode={viewMode}
                   pointPosition={pointPosition}
