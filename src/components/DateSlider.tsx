@@ -230,11 +230,8 @@ export const DateSlider = memo(
     });
 
     //TODO: 2. date label and time unit label format should be customizable.
-    //TODO: 3. update docs, there are two readme files now.
-    //TODO: 4. add more tests.
+    //TODO: 4. add tests.
     //TODO: 5. improve performance, avoid too many re-renders when dragging.
-    //TODO: 6. refactor files structure under components/DateSlider for better clarity.
-    //TODO: 7. add more comments and documentation in the code.
 
     useHandleVisible({
       pointHandleRef,
